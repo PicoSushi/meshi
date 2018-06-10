@@ -23,17 +23,20 @@ func main() {
 		Lat: 35.690921,
 		Lng: 139.70025799999996,
 	}
+
 	r := &maps.NearbySearchRequest{
 		Location: shinjuku_station,
 		Radius:   300,
-		Keyword:  "パフェ",
-		OpenNow:  true,
+		Keyword:  "いちごパフェ",
+		OpenNow:  false,
 	}
 
-	route, err := c.NearbySearch(context.Background(), r)
+	response, err := c.NearbySearch(context.Background(), r)
 	if err != nil {
 		log.Fatalf("fatal error: %s", err)
 	}
 
-	pretty.Println(route)
+	for _, result := range response.Results {
+		pretty.Println(result.Name)
+	}
 }
