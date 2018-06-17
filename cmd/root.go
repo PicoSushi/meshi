@@ -5,6 +5,7 @@ import (
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/picosushi/meshi/client"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,7 +24,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: randomMeshi,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -71,5 +72,21 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+}
+
+func randomMeshi(cmd *cobra.Command, args []string) {
+	// fmt.Println(args)
+	// fmt.Println(cmd)
+	api_key := os.Getenv("GOOGLE_MAPS_API_KEY")
+	fmt.Println("API Key:", api_key)
+	response := meshi.Meshi(api_key, 35.690921, 139.700258, 500, "肉")
+
+	for _, result := range response.Results {
+		fmt.Println(result.Name)
+	}
+
+	if response.NextPageToken != "" {
+		fmt.Println(response.NextPageToken)
 	}
 }
