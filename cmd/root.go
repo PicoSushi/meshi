@@ -15,15 +15,15 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "meshi",
-	Short: "A brief description of your application",
+	Short: "meshi returns random meshi for given parameters",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+
+	// Currently, randomMeshi is root command.
 	Run: randomMeshi,
 }
 
@@ -43,6 +43,11 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.meshi.yaml)")
+
+	rootCmd.PersistentFlags().Float64("lat", 35.690921, "Latitude for center location")
+	rootCmd.PersistentFlags().Float64("lng", 139.700258, "Longtitude for center location")
+	rootCmd.PersistentFlags().Int("distance", 500, "Distance from given latitude/longtitude")
+	rootCmd.PersistentFlags().String("keyword", "いちごパフェ", "keyword for searching meshi")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -78,9 +83,19 @@ func initConfig() {
 func randomMeshi(cmd *cobra.Command, args []string) {
 	// fmt.Println(args)
 	// fmt.Println(cmd)
+
+	lat, _ := cmd.Flags().GetFloat64("lat")
+	lng, _ := cmd.Flags().GetFloat64("lng")
+	distance, _ := cmd.Flags().GetInt("distance")
+	keyword, _ := cmd.Flags().GetString("keyword")
+
 	api_key := os.Getenv("GOOGLE_MAPS_API_KEY")
-	fmt.Println("API Key:", api_key)
-	response := meshi.Meshi(api_key, 35.690921, 139.700258, 500, "肉")
+
+	response := meshi.Meshi(api_key,
+		lat, lng,
+		uint(distance),
+		keyword,
+	)
 
 	for _, result := range response.Results {
 		fmt.Println(result.Name)
